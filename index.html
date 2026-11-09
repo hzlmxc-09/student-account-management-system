@@ -1,0 +1,78 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Account Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+
+    <main class="container">
+
+        <div class="logo">S.</div>
+
+        <section id="loginPage">
+            <h1>Welcome Back!</h1>
+            <p class="subtitle">Sign in to your student account.</p>
+
+            <form id="loginForm">
+                <label for="loginEmail">Email Address</label>
+                <input type="email" id="loginEmail"
+                    placeholder="you@example.com" required>
+
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword"
+                    placeholder="Enter your password" required>
+
+                <button type="submit">Sign In</button>
+            </form>
+
+            <p class="switch">
+                New here?
+                <a href="#" id="showRegister">Create an account</a>
+            </p>
+        </section>
+
+        <section id="registerPage" class="hidden">
+            <h1>Create Account</h1>
+            <p class="subtitle">Register your student account.</p>
+
+            <form id="registerForm">
+                <label for="fullName">Full Name</label>
+                <input type="text" id="fullName"
+                    placeholder="Enter your full name" required>
+
+                <label for="registerEmail">Email Address</label>
+                <input type="email" id="registerEmail"
+                    placeholder="you@example.com" required>
+
+                <label for="registerPassword">Password</label>
+                <input type="password" id="registerPassword"
+                    placeholder="At least 8 characters"
+                    minlength="8" required>
+
+                <button type="submit">Create Account</button>
+            </form>
+
+            <p class="switch">
+                Already have an account?
+                <a href="#" id="showLogin">Sign In</a>
+            </p>
+        </section>
+
+        <section id="dashboard" class="hidden">
+            <h1>Welcome!</h1>
+            <p class="subtitle" id="userName"></p>
+            <p>Your account is signed in.</p>
+            <button id="logoutButton">Log Out</button>
+        </section>
+
+        <p id="message" class="message"></p>
+
+    </main>
+
+</body>
+</html>
