@@ -3,25 +3,25 @@
 const SUPABASE_URL = "https://ihdyrtysnuvozzqhywck.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_-p5DmMjQonJaJQfgTjx8fw_KNe8ZNNG";
 
-// Connect to Supabase
+
 const db = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_ANON_KEY
 );
-
 
 const loginPage = document.getElementById("loginPage");
 const registerPage = document.getElementById("registerPage");
 const dashboard = document.getElementById("dashboard");
 const message = document.getElementById("message");
 
+function showMessage(text) {
+    message.textContent = text;
+}
 
-// 3. PAGE NAVIGATION
 function showLogin() {
     loginPage.classList.remove("hidden");
     registerPage.classList.add("hidden");
     dashboard.classList.add("hidden");
-    showMessage("");
 }
 
 function showRegister() {
@@ -31,9 +31,171 @@ function showRegister() {
     showMessage("");
 }
 
-
 function showDashboard(profile) {
     loginPage.classList.add("hidden");
+    registerPage.classList.add("hidden");
+    dashboard.classList.remove("hidden");
+
+    document.getElementById("studentId").textContent = profile.student_id;
+    document.getElementById("profileName").textContent = profile.full_name;
+    document.getElementById("profileBirth").textContent = profile.date_of_birth;
+    document.getElementById("profileGender").textContent = profile.gender;
+    document.getElementById("profileAddress").textContent = profile.address;
+    document.getElementById("profileContact").textContent = profile.contact_number;
+    document.getElementById("profileEmail").textContent = profile.email;
+    document.getElementById("profileProgram").textContent = profile.program;
+
+    const years = {
+        1: "1st Year",
+        2: "2nd Year",
+        3: "3rd Year",
+        4: "4th Year"
+    };
+
+    document.getElementById("profileYear").textContent =
+        years[profile.year_level];
+}
+
+// PAGE NAVIGATION
+document.getElementById("showRegister").addEventListener("click", function(e) {
+    e.preventDefault();
+    showRegister();
+});
+
+document.getElementById("showLogin").addEventListener("click", function(e) {
+    e.preventDefault();
+    showLogin();
+});
+
+// REGISTRATION
+document.getElementById("registerForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    showMessage("Creating your student account...");
+
+    const fullName = document.getElementById("fullName").value.trim();
+    const dateOfBirth = document.getElementById("dateOfBirth").value;
+    const gender = document.getElementById("gender").value;
+    const address = document.getElementById("address").value.trim();
+    const contactNumber = document.getElementById("contactNumber").value.trim();
+    const program = document.getElementById("program").value;
+    const yearLevel = document.getElementById("yearLevel").value;
+    const email = document.getElementById("registerEmail").value.trim();
+    const password = document.getElementById("registerPassword").value;
+
+    if (new Date(dateOfBirth) >= new Date()) {
+        showMessage("Please enter a valid date of birth.");
+        return;
+    }
+
+    const { data, error } = await db.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+            emailRedirectTo: window.location.origin + window.location.pathname,
+            data: {
+                full_name: fullName,
+                date_of_birth: dateOfBirth,
+                gender: gender,
+                address: address,
+                contact_number: contactNumber,
+                program: program,
+                year_level: yearLevel
+            }
+        }
+    });
+
+    if (error) {
+        showMessage(error.message);
+        return;
+    }
+
+    this.reset();
+
+    if (data.session) {
+        showMessage("Registration successful!");
+        showLogin();
+    } else {
+        showLogin();
+        showMessage("Registration successful! Please check your email to confirm your account.");
+    }
+});
+
+// LOGIN
+document.getElementById("loginForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    showMessage("Logging in...");
+
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value;
+
+    const { data, error } = await db.auth.signInWithPassword({
+        email: email,
+        password: password
+    });
+
+    if (error) {
+        showMessage(error.message);
+        return;
+    }
+
+    const { data: profile, error: profileError } = await db
+        .from("student_profiles")
+        .select("*")
+        .eq("id", data.user.id)
+        .single();
+
+    if (profileError) {
+        showMessage("Unable to load student profile: " + profileError.message);
+        return;
+    }
+
+    showMessage("");
+    showDashboard(profile);
+});
+
+// LOGOUT
+document.getElementById("logoutButton").addEventListener("click", async function() {
+    const { error } = await db.auth.signOut();
+
+    if (error) {
+        showMessage(error.message);
+        return;
+    }
+
+    showLogin();
+    showMessage("You have logged out successfully.");
+});
+
+// CHECK EXISTING SESSION
+async function checkSession() {
+    const { data, error } = await db.auth.getSession();
+
+    if (error || !data.session) {
+        showLogin();
+        return;
+    }
+
+    const user = data.session.user;
+
+    const { data: profile, error: profileError } = await db
+        .from("student_profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+    if (profileError) {
+        showLogin();
+        showMessage("Unable to load your student profile.");
+        return;
+    }
+
+    showDashboard(profile);
+}
+
+checkSession();
+
     registerPage.classList.add("hidden");
     dashboard.classList.remove("hidden");
 
