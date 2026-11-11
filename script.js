@@ -66,6 +66,7 @@ function showDashboard(profile) {
 // Load the profile row; if the table row is missing, fall back to the
 // details saved with the account so the dashboard still opens.
 async function loadProfile(user) {
+    // 1. Try to read the profile row
     const { data, error } = await db
         .from("student_profiles")
         .select("*")
@@ -73,9 +74,15 @@ async function loadProfile(user) {
         .maybeSingle();
 
     if (data) return data;
-
     if (error) console.warn("Profile table error:", error.message);
 
+    // 2. Row missing: ask the database to create it
+    const { data: created, error: rpcError } = await db.rpc("ensure_my_profile");
+    const row = Array.isArray(created) ? created[0] : created;
+    if (row && row.student_id) return row;
+    if (rpcError) console.warn("ensure_my_profile error:", rpcError.message);
+
+    // 3. Last resort: show saved details
     const meta = user.user_metadata || {};
     return {
         student_id: "Pending",
@@ -88,6 +95,7 @@ async function loadProfile(user) {
         program: meta.program,
         year_level: meta.year_level
     };
+
 }
 
 // ---------- REGISTER ----------
