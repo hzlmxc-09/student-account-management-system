@@ -8,7 +8,7 @@ function showMessage(text) {
     message.textContent = text;
 }
 
-// ---------- PAGE NAVIGATION (works even if Supabase fails to load) ----------
+// ---------- PAGE NAVIGATION ----------
 function showLogin() {
     loginPage.classList.remove("hidden");
     registerPage.classList.add("hidden");
@@ -63,8 +63,7 @@ function showDashboard(profile) {
         years[profile.year_level] || profile.year_level || "";
 }
 
-// Load the profile row; if the table row is missing, fall back to the
-// details saved with the account so the dashboard still opens.
+// ---------- LOAD PROFILE ----------
 async function loadProfile(user) {
     // 1. Try to read the profile row
     const { data, error } = await db
@@ -74,15 +73,20 @@ async function loadProfile(user) {
         .maybeSingle();
 
     if (data) return data;
-    if (error) console.warn("Profile table error:", error.message);
 
     // 2. Row missing: ask the database to create it
     const { data: created, error: rpcError } = await db.rpc("ensure_my_profile");
     const row = Array.isArray(created) ? created[0] : created;
     if (row && row.student_id) return row;
-    if (rpcError) console.warn("ensure_my_profile error:", rpcError.message);
 
-    // 3. Last resort: show saved details
+    // 3. Show the real reason on screen
+    showMessage(
+        "Profile error: " +
+        (error ? error.message : "no row found") +
+        (rpcError ? " | RPC: " + rpcError.message : "")
+    );
+
+    // 4. Last resort: show saved details
     const meta = user.user_metadata || {};
     return {
         student_id: "Pending",
@@ -95,7 +99,6 @@ async function loadProfile(user) {
         program: meta.program,
         year_level: meta.year_level
     };
-
 }
 
 // ---------- REGISTER ----------
@@ -148,8 +151,6 @@ document.getElementById("registerForm").addEventListener("submit", async functio
         showLogin();
 
         if (data.session) {
-            // Email confirmation is off: they are already signed in, so sign out
-            // and ask them to log in, keeping the flow consistent.
             await db.auth.signOut();
             showMessage("Registration successful! You can now sign in.");
         } else {
@@ -188,10 +189,10 @@ document.getElementById("loginForm").addEventListener("submit", async function (
             return;
         }
 
+        showMessage("");
         const profile = await loadProfile(data.user);
 
         this.reset();
-        showMessage("");
         showDashboard(profile);
     } catch (err) {
         showMessage("Something went wrong: " + err.message);
