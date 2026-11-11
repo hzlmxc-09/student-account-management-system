@@ -38,31 +38,67 @@
         </section>
 
         <section id="registerPage" class="hidden">
-            <h1>Create Account</h1>
-            <p class="subtitle">Register your student account.</p>
+        
+<section id="registerPage" class="hidden">
+    <h1>Create Account</h1>
+    <p class="subtitle">Register your student information</p>
 
-            <form id="registerForm">
-                <label for="fullName">Full Name</label>
-                <input type="text" id="fullName"
-                    placeholder="Enter your full name" required>
+    <form id="registerForm">
 
-                <label for="registerEmail">Email Address</label>
-                <input type="email" id="registerEmail"
-                    placeholder="you@example.com" required>
+        <label for="fullName">Full Name</label>
+        <input type="text" id="fullName" required>
 
-                <label for="registerPassword">Password</label>
-                <input type="password" id="registerPassword"
-                    placeholder="At least 8 characters"
-                    minlength="8" required>
+        <label for="dateOfBirth">Date of Birth</label>
+        <input type="date" id="dateOfBirth" required>
 
-                <button type="submit">Create Account</button>
-            </form>
+        <label for="gender">Gender</label>
+        <select id="gender" required>
+            <option value="">Select Gender</option>
+            <option value="Female">Female</option>
+            <option value="Male">Male</option>
+            <option value="Prefer not to say">Prefer not to say</option>
+        </select>
 
-            <p class="switch">
-                Already have an account?
-                <a href="#" id="showLogin">Sign In</a>
-            </p>
-        </section>
+        <label for="address">Complete Address</label>
+        <textarea id="address" required></textarea>
+
+        <label for="contactNumber">Contact Number</label>
+        <input type="tel" id="contactNumber" required>
+
+        <label for="program">Program</label>
+        <select id="program" required>
+            <option value="">Select Program</option>
+            <option value="BS Information Technology">BS Information Technology</option>
+            <option value="BS Computer Science">BS Computer Science</option>
+            <option value="BS Computer Engineering">BS Computer Engineering</option>
+            <option value="BS Information Systems">BS Information Systems</option>
+            <option value="Other">Other</option>
+        </select>
+
+        <label for="yearLevel">Year Level</label>
+        <select id="yearLevel" required>
+            <option value="">Select Year Level</option>
+            <option value="1">1st Year</option>
+            <option value="2">2nd Year</option>
+            <option value="3">3rd Year</option>
+            <option value="4">4th Year</option>
+        </select>
+
+        <label for="registerEmail">Email Address</label>
+        <input type="email" id="registerEmail" required>
+
+        <label for="registerPassword">Password</label>
+        <input type="password" id="registerPassword" minlength="6" required>
+
+        <button type="submit">Register</button>
+    </form>
+
+    <p class="switch">
+        Already have an account?
+        <a href="#" id="showLogin">Log in</a>
+    </p>
+</section>
+
 
         <section id="dashboard" class="hidden">
             <h1>Welcome!</h1>
