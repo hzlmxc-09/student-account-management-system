@@ -9,31 +9,189 @@ const db = window.supabase.createClient(
     SUPABASE_ANON_KEY
 );
 
-// PAGE ELEMENTS
+
 const loginPage = document.getElementById("loginPage");
 const registerPage = document.getElementById("registerPage");
 const dashboard = document.getElementById("dashboard");
 const message = document.getElementById("message");
 
-// SHOW LOGIN PAGE
+
+// 3. PAGE NAVIGATION
 function showLogin() {
     loginPage.classList.remove("hidden");
     registerPage.classList.add("hidden");
     dashboard.classList.add("hidden");
-    message.textContent = "";
+    showMessage("");
 }
 
-// SHOW REGISTRATION PAGE
 function showRegister() {
     loginPage.classList.add("hidden");
     registerPage.classList.remove("hidden");
     dashboard.classList.add("hidden");
-    message.textContent = "";
+    showMessage("");
 }
 
-// SHOW DASHBOARD
 function showDashboard(name, email) {
     loginPage.classList.add("hidden");
+    registerPage.classList.add("hidden");
+    dashboard.classList.remove("hidden");
+
+    document.getElementById("userName").textContent =
+        name || email;
+}
+
+function showMessage(text) {
+    message.textContent = text;
+}
+
+
+// 4. SWITCH BETWEEN LOGIN AND REGISTRATION
+document.getElementById("showRegister").addEventListener("click", function(e) {
+    e.preventDefault();
+    showRegister();
+});
+
+document.getElementById("showLogin").addEventListener("click", function(e) {
+    e.preventDefault();
+    showLogin();
+});
+
+
+// 5. STUDENT REGISTRATION
+document.getElementById("registerForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    showMessage("Creating your student account...");
+
+    const fullName = document.getElementById("fullName").value.trim();
+    const dateOfBirth = document.getElementById("dateOfBirth").value;
+    const gender = document.getElementById("gender").value;
+    const address = document.getElementById("address").value.trim();
+    const contactNumber = document.getElementById("contactNumber").value.trim();
+    const program = document.getElementById("program").value;
+    const yearLevel = document.getElementById("yearLevel").value;
+    const email = document.getElementById("registerEmail").value.trim();
+    const password = document.getElementById("registerPassword").value;
+
+    if (new Date(dateOfBirth) >= new Date()) {
+        showMessage("Please enter a valid date of birth.");
+        return;
+    }
+
+    const { data, error } = await db.auth.signUp({
+        email: email,
+        password: password,
+        options: {
+            emailRedirectTo: window.location.origin +
+                window.location.pathname,
+            data: {
+                full_name: fullName,
+                date_of_birth: dateOfBirth,
+                gender: gender,
+                address: address,
+                contact_number: contactNumber,
+                program: program,
+                year_level: yearLevel
+            }
+        }
+    });
+
+    if (error) {
+        showMessage(error.message);
+        return;
+    }
+
+    document.getElementById("registerForm").reset();
+
+    if (data.session) {
+        showMessage("Registration successful!");
+        showLogin();
+    } else {
+        showMessage(
+            "Registration successful! Please check your email to confirm your account before logging in."
+        );
+        showLogin();
+    }
+});
+
+
+// 6. STUDENT LOGIN
+document.getElementById("loginForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    showMessage("Logging in...");
+
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value;
+
+    const { data, error } = await db.auth.signInWithPassword({
+        email: email,
+        password: password
+    });
+
+    if (error) {
+        showMessage(error.message);
+        return;
+    }
+
+    const { data: profile, error: profileError } = await db
+        .from("student_profiles")
+        .select("full_name")
+        .eq("id", data.user.id)
+        .single();
+
+    if (profileError) {
+        showMessage("Unable to load your student profile: " + profileError.message);
+        return;
+    }
+
+    showDashboard(profile.full_name, data.user.email);
+});
+
+
+// 7. STUDENT LOGOUT
+document.getElementById("logoutButton").addEventListener("click", async function() {
+    const { error } = await db.auth.signOut();
+
+    if (error) {
+        showMessage(error.message);
+        return;
+    }
+
+    showLogin();
+    showMessage("You have logged out successfully.");
+});
+
+
+// 8. CHECK EXISTING LOGIN SESSION
+async function checkSession() {
+    const { data, error } = await db.auth.getSession();
+
+    if (error || !data.session) {
+        showLogin();
+        return;
+    }
+
+    const user = data.session.user;
+
+    const { data: profile, error: profileError } = await db
+        .from("student_profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .single();
+
+    if (profileError) {
+        showLogin();
+        showMessage("Unable to load your student profile.");
+        return;
+    }
+
+    showDashboard(profile.full_name, user.email);
+}
+
+checkSession();
+
+
     registerPage.classList.add("hidden");
     dashboard.classList.remove("hidden");
 
