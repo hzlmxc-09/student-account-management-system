@@ -31,13 +31,47 @@ function showRegister() {
     showMessage("");
 }
 
-function showDashboard(name, email) {
+
+function showDashboard(profile) {
     loginPage.classList.add("hidden");
     registerPage.classList.add("hidden");
     dashboard.classList.remove("hidden");
 
-    document.getElementById("userName").textContent =
-        name || email;
+    document.getElementById("studentId").textContent =
+        profile.student_id;
+
+    document.getElementById("profileName").textContent =
+        profile.full_name;
+
+    document.getElementById("profileBirth").textContent =
+        profile.date_of_birth;
+
+    document.getElementById("profileGender").textContent =
+        profile.gender;
+
+    document.getElementById("profileAddress").textContent =
+        profile.address;
+
+    document.getElementById("profileContact").textContent =
+        profile.contact_number;
+
+    document.getElementById("profileEmail").textContent =
+        profile.email;
+
+    document.getElementById("profileProgram").textContent =
+        profile.program;
+
+    const yearNames = {
+        1: "1st Year",
+        2: "2nd Year",
+        3: "3rd Year",
+        4: "4th Year"
+    };
+
+    document.getElementById("profileYear").textContent =
+        yearNames[profile.year_level] || profile.year_level;
+}
+
 }
 
 function showMessage(text) {
@@ -136,7 +170,7 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
 
     const { data: profile, error: profileError } = await db
         .from("student_profiles")
-        .select("full_name")
+        .select("*")
         .eq("id", data.user.id)
         .single();
 
@@ -145,7 +179,7 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
         return;
     }
 
-    showDashboard(profile.full_name, data.user.email);
+    showDashboard(profile);
 });
 
 
@@ -176,7 +210,7 @@ async function checkSession() {
 
     const { data: profile, error: profileError } = await db
         .from("student_profiles")
-        .select("full_name")
+        .select("*")
         .eq("id", user.id)
         .single();
 
@@ -186,7 +220,7 @@ async function checkSession() {
         return;
     }
 
-    showDashboard(profile.full_name, user.email);
+    showDashboard(profile);
 }
 
 checkSession();
