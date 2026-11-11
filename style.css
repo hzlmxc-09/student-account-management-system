@@ -128,3 +128,78 @@ button:hover {
         font-size: 24px;
     }
 }
+
+/* STUDENT DASHBOARD */
+
+.student-id-card {
+    background: linear-gradient(135deg, #7161d8, #9b8ce9);
+    color: white;
+    padding: 25px 20px;
+    border-radius: 15px;
+    text-align: center;
+    margin: 25px 0;
+}
+
+.student-id-card p {
+    font-size: 12px;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+.student-id-card h2 {
+    font-size: 28px;
+    letter-spacing: 2px;
+}
+
+.profile-section {
+    background: #f8f7ff;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 18px;
+    text-align: left;
+}
+
+.profile-section h3 {
+    color: #7161d8;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.profile-section p {
+    margin-bottom: 12px;
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.profile-section strong {
+    color: #39334f;
+}
+
+#dashboard button {
+    margin-top: 10px;
+}
+
+#registerPage select,
+#registerPage textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-top: 6px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    font-family: inherit;
+    background: white;
+}
+
+#registerPage textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+#registerPage select:focus,
+#registerPage textarea:focus {
+    outline: none;
+    border-color: #7161d8;
+}
