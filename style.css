@@ -202,4 +202,30 @@ button:hover {
 #registerPage textarea:focus {
     outline: none;
     border-color: #7161d8;
+} 
+
+
+/* PAGE DISPLAY FIX */
+
+body {
+    align-items: flex-start;
 }
+
+.container {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#registerPage {
+    width: 100%;
+}
+
+#registerPage form {
+    width: 100%;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
