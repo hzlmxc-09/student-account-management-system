@@ -5,6 +5,17 @@ const SUPABASE_ANON_KEY = "sb_publishable_-p5DmMjQonJaJQfgTjx8fw_KNe8ZNNG";
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // PAGE ELEMENTS
+document.getElementById("showRegister").addEventListener("click", function (e) {
+    e.preventDefault();
+    loginPage.classList.add("hidden");
+    registerPage.classList.remove("hidden");
+});
+
+document.getElementById("showLogin").addEventListener("click", function (e) {
+    e.preventDefault();
+    registerPage.classList.add("hidden");
+    loginPage.classList.remove("hidden");
+});
 const loginPage = document.getElementById("loginPage");
 const registerPage = document.getElementById("registerPage");
 const dashboard = document.getElementById("dashboard");
